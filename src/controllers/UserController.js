@@ -11,7 +11,6 @@ class UserController {
       .from('users')
       .where('email', email)
 
-    console.log(userExists.length)
 
     if (userExists.length === 0) {
       const hashedPassword = await hash(password, 8)
@@ -54,12 +53,12 @@ class UserController {
 
     if (validUser.length === 0) {
       throw new AppError('Informacoes do usuario invalida')
-    } //else if (validEmailWithId.length === 0){}
+    } 
     if (!checkOldPassword) {
       throw new AppError('A senha antiga nao confere')
     }
     console.log(validUser)
-    //if()
+    
 
     const user_update = await knex('users').where('id', user_id).update({
       name: new_name,
