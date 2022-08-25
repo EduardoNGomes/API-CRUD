@@ -5,7 +5,7 @@ const AppError = require('../utils/AppError')
 class NotesController {
   async create(request, response) {
     const { user_name, title, description, rating, tags } = request.body
-    const { user_id } = request.params
+    const user_id = request.user.id
 
     const validUser = await knex('users')
       .where('name', user_name)
@@ -26,7 +26,7 @@ class NotesController {
     const note_id = await knex('movie_notes').insert({
       title,
       description,
-      user_grade: rating,
+      user_grade: Math.ceil(rating),
       user_id
     })
 
@@ -44,10 +44,10 @@ class NotesController {
   }
 
   async show(request, response) {
-    const { user_id } = request.params
+    const user_id = request.user.id
 
     const notes = await knex
-      .select('title', 'description')
+      .select('title', 'description', 'user_grade')
       .from('movie_notes')
       .where({ user_id })
       .orderBy('created_at')

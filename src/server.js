@@ -3,11 +3,16 @@ const express = require('express')
 const routes = require('./routes')
 const AppError = require('./utils/AppError')
 const database = require('./database/sqlite')
+const cors = require('cors')
+const { UPLOADS_FOLDER } = require('./configs/upload')
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 app.use(routes)
 database()
+
+app.use('/files', express.static(UPLOADS_FOLDER))
 
 app.use((error, request, response, next) => {
   if (error instanceof AppError) {
@@ -24,6 +29,6 @@ app.use((error, request, response, next) => {
   })
 })
 
-const PORT = 333
+const PORT = 3333
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`))
