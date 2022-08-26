@@ -11,8 +11,6 @@ class UserController {
       .from('users')
       .where('email', email)
 
-    console.log(userExists.length)
-
     if (userExists.length === 0) {
       const hashedPassword = await hash(password, 8)
       const user = await knex('users').insert({
@@ -29,40 +27,36 @@ class UserController {
 
   async update(request, response) {
     const user_id = request.user.id
+    const { name, email, password, new_password } = request.body
 
-    const validUser = await knex
-      .select('id')
-      .from('users')
-      .where('id', user_id)
-      .andWhere({ name })
-      .andWhere({ email })
-
-    const validUserPassword = await knex
-      .select('password')
-      .from('users')
-      .where('id', user_id)
-
-    const checkOldPassword = await compare(
-      password,
-      validUserPassword[0].password
-    )
-
-    const att_password = await hash(new_password, 8)
-
-    if (validUser.length === 0) {
-      throw new AppError('Informacoes do usuario invalida')
-    } //else if (validEmailWithId.length === 0){}
-    if (!checkOldPassword) {
-      throw new AppError('A senha antiga nao confere')
+    const userExists = await knex('users').where({ email })
+    if (userExists.length === 1 && userExists[0].id !== user_id) {
+      throw new AppError('Email já cadastrado')
     }
-    console.log(validUser)
-    //if()
+
+    if (password && new_password) {
+      const validUserPassword = await knex
+        .select('password')
+        .from('users')
+        .where('id', user_id)
+
+      const checkOldPassword = await compare(
+        password,
+        validUserPassword[0].password
+      )
+      const att_password = await hash(new_password, 8)
+      if (!checkOldPassword) {
+        throw new AppError('A senha antiga nao confere')
+      }
+
+      const user_update = await knex('users').where('id', user_id).update({
+        password: att_password
+      })
+    }
 
     const user_update = await knex('users').where('id', user_id).update({
-      name: new_name,
-      email: new_email,
-      password: att_password,
-      img
+      name,
+      email
     })
 
     return response.json()

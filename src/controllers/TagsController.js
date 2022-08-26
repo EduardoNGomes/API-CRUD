@@ -2,11 +2,11 @@ const knex = require('../database/knex')
 
 class TagsController {
   async show(request, response) {
-    const { name } = request.params
+    const { note_id } = request.params
 
-    const tagName = await knex.select('name').from('movie_tags').where({ name })
+    const tags = await knex('movie_tags').andWhere({ note_id }).groupBy('name')
 
-    return response.json(tagName)
+    return response.json(tags)
   }
 }
 

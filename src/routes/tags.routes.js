@@ -4,6 +4,6 @@ const TagsController = require('../controllers/TagsController')
 const tagsRoutes = Router()
 const tagsController = new TagsController()
 
-tagsRoutes.get('/:name', tagsController.show)
+tagsRoutes.get('/:note_id', tagsController.show)
 
 module.exports = tagsRoutes
