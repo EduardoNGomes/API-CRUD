@@ -1,3 +1,4 @@
+require('dotenv/config')
 require('express-async-errors')
 const express = require('express')
 const routes = require('./routes')
@@ -29,6 +30,6 @@ app.use((error, request, response, next) => {
   })
 })
 
-const PORT = 3333
+const PORT = process.env.PORT || 3333
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`))
